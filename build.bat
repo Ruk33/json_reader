@@ -1,0 +1,1 @@
+zig cc main.c json_read.c -lc
