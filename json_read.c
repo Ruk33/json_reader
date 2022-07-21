@@ -34,23 +34,20 @@ char *json_read_int(int *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
     *dest = value ? atoi(value) : 0;
-    return value ? value : 0;
+    return value;
 }
 
 char *json_read_dbl(double *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
     *dest = value ? atof(value) : 0;
-    return value ? value : 0;
+    return value;
 }
 
 char *json_read_bool(int *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
-    *dest = 0;
-    if (!value)
-        return 0;
-    *dest = *value == 't';
+    *dest = value && *value == 't';
     return value;
 }
 
