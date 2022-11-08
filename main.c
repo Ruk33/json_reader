@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include "json_read.h"
 
@@ -6,7 +7,7 @@ struct user {
     char pass[32];
 };
 
-int main(int argc, char **argv)
+int main(void)
 {
     char *json =
         "{"
@@ -15,10 +16,11 @@ int main(int argc, char **argv)
         "  \"foo\": 42.4423,"
         "  \"some_key\": true,"
         "  \"users\": ["
-        "   {\"name\": \"user_a\", \"pass\": \"1234\"},"
-        "   {\"name\": \"user_b\", \"pass\": \"4321\"},"
-        "   {\"name\": \"user_with_longer_name\", \"pass\": \"4321\"},"
-        "  ]"
+        "       {\"name\": \"user_a\", \"pass\": \"1234\"},"
+        "       {\"name\": \"user_b\", \"pass\": \"4321\"},"
+        "       {\"name\": \"user_with_longer_name\", \"pass\": \"4321\"},"
+        "  ],"
+        "  \"not_an_array\": 32,"
         "}"
         ;
     
@@ -40,7 +42,7 @@ int main(int argc, char **argv)
     printf("some_key = '%s'\n", some_key ? "true" : "false");
     
     // read array of users (up to 4)
-    char *user_cursor = json_read_find_value(json, "users");
+    char *user_cursor = json_read_find_arr(json, "users");
     size_t found_users = 0;
     for (size_t i = 0; i < 4; i += 1) {
         if (!user_cursor)
@@ -54,6 +56,9 @@ int main(int argc, char **argv)
         printf("users[%d].pass = '%s'\n", i, users[i].pass);
     }
     printf("found users: %d.\n", found_users);
+
+    assert(json_read_find_value(json, "not_an_array"));
+    assert(json_read_find_arr(json, "not_an_array") == 0);
     
     return 0;
 }

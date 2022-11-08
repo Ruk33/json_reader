@@ -1,15 +1,10 @@
 #ifndef JSON_READ_H
 #define JSON_READ_H
 
-#include <stddef.h> // size_t
-
-#define json_read_str_arr(dest, json, key) \
-json_read_str(dest, json, key, sizeof(dest))
-
 // quick lib to read values from json.
 // won't parse the json, just try to read
 // values from it.
-
+// 
 // notes
 // - no memory is allocated.
 // - NULL can be safely used for all parameters.
@@ -22,7 +17,10 @@ json_read_str(dest, json, key, sizeof(dest))
 //   if a string isn't a string, no bytes will be copied and
 //   the first byte will be set to 0 (empty string)
 
-// ---
+#include <stddef.h> // size_t
+
+#define json_read_str_arr(dest, json, key) \
+    json_read_str((dest), (json), (key), sizeof(dest))
 
 // find the start of the value from key.
 // - on failure (key wasn't found), NULL is returned.
@@ -32,6 +30,10 @@ json_read_str(dest, json, key, sizeof(dest))
 // json_read_find_value("{ "foo": 1234 }", "foo")
 //   -> 12... (pointer to start of the value)
 char *json_read_find_value(char *json, char *key);
+// find the beginning of an array.
+// - on failure (key was not found or is not an array), NULL is returned.
+// - on success, a pointer to the start of the array is returned.
+char *json_read_find_arr(char *json, char *key);
 
 // read values from key into dest.
 // - on failure, NULL is returned.

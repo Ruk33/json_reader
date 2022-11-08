@@ -1,1 +1,1 @@
-zig cc main.c json_read.c -lc
+zig cc -Wall -Wextra -Werror main.c json_read.c -lc

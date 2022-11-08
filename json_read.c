@@ -30,6 +30,15 @@ char *json_read_find_value(char *src, char *key)
     return 0;
 }
 
+char *json_read_find_arr(char *json, char *key)
+{
+    char *value = json_read_find_value(json, key);
+    // check if we found an array.
+    if (!value || *value != '[')
+        return 0;
+    return value;
+}
+
 char *json_read_int(int *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
@@ -66,7 +75,7 @@ char *json_read_str(char *dest, char *src, char *key, size_t n)
     cursor++;
     while (*cursor && n > 1) {
         // check if we are at the end of the string
-        // (and not an scaped " character)
+        // (and not an escaped " character)
         if (*cursor == '"' && *(cursor - 1) != '\\')
             break;
         *dest++ = *cursor++;
