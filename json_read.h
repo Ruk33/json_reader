@@ -34,6 +34,23 @@ char *json_read_find_value(char *json, char *key);
 // - on failure (key was not found or is not an array), NULL is returned.
 // - on success, a pointer to the start of the array is returned.
 char *json_read_find_arr(char *json, char *key);
+// check if a cursor is still inside of an array.
+// 
+// example:
+// char *arr = json_read_find_arr("{
+//  my_array: [{foo: 42}, {foo: 43}], 
+//  foo: 44, ---> should not be found if iterating in my_array
+// }", "my_array");
+// char *arr_cursor = arr;
+// int found = 0;
+// while (...) {
+//  arr_cursor = json_read_int(0, arr_cursor, "foo");
+//  if (!json_read_is_inside_of_arr(arr, arr_cursor))
+//      break;
+//  found++;
+// }
+// found = 2 (NOT 3)
+int json_read_is_inside_of_arr(char *start_of_array, char *cursor);
 
 // read values from key into dest.
 // - on failure, NULL is returned.

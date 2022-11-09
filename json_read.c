@@ -39,24 +39,55 @@ char *json_read_find_arr(char *json, char *key)
     return value;
 }
 
+int json_read_is_inside_of_arr(char *start_of_array, char *cursor)
+{
+    if (!start_of_array || !cursor)
+        return 0;
+    // just at the start? then yes, we may have values left.
+    if (start_of_array == cursor && *start_of_array == '[')
+        return 1;
+    int i = 0;
+    while (start_of_array < cursor) {
+        switch (*start_of_array) {
+        case '[':
+            i++;
+            break;
+        case ']':
+            i--;
+            // if []] -> we are outside of the specified array.
+            if (i < 0)
+                return 0;
+            break;
+        default:
+            break;
+        }
+        start_of_array++;
+    }
+    // if we got open [ then we still haven't reached the end of the array.
+    return i > 0;
+}
+
 char *json_read_int(int *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
-    *dest = value ? atoi(value) : 0;
+    if (dest)
+        *dest = value ? atoi(value) : 0;
     return value;
 }
 
 char *json_read_dbl(double *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
-    *dest = value ? atof(value) : 0;
+    if (dest)
+        *dest = value ? atof(value) : 0;
     return value;
 }
 
 char *json_read_bool(int *dest, char *src, char *key)
 {
     char *value = json_read_find_value(src, key);
-    *dest = value && *value == 't';
+    if (dest)
+        *dest = value && *value == 't';
     return value;
 }
 
@@ -65,7 +96,8 @@ char *json_read_str(char *dest, char *src, char *key, size_t n)
     char *value = json_read_find_value(src, key);
     char *cursor = value;
     // initial empty string value.
-    *dest = 0;
+    if (dest)
+        *dest = 0;
     if (!cursor)
         return 0;
     // check if value is string.
@@ -78,10 +110,13 @@ char *json_read_str(char *dest, char *src, char *key, size_t n)
         // (and not an escaped " character)
         if (*cursor == '"' && *(cursor - 1) != '\\')
             break;
-        *dest++ = *cursor++;
+        if (dest)
+            *dest++ = *cursor;
+        cursor++;
         n -= 1;
     }
     // null terminator.
-    *dest = 0;
+    if (dest)
+        *dest = 0;
     return cursor;
 }
